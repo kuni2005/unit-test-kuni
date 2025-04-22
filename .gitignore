@@ -1,0 +1,17 @@
+# .NET
+bin/
+obj/
+*.user
+*.lock.json
+*.suo
+*.userosscache
+*.sln.docstates
+
+# Mac
+.DS_Store
+
+# VS Code
+.vscode/
+
+# Test results
+TestResults/
