@@ -2,16 +2,21 @@
 {
     public class Library
     {
-        private List<string> books = new();
+        private readonly IBookRepository _repository; //guardamos la dependencia
 
-        public void AddBook(string bookTitle)
+        public Library(IBookRepository repository) //recibimos el repo
         {
-            books.Add(bookTitle);
+            _repository = repository;
         }
 
-        public bool HasBook(string bookTitle)
+        public void AddBook(string book) //metodo que agrega un libro usando el repo
         {
-            return books.Contains(bookTitle);
+            _repository.Add(book);
+        }
+
+        public bool HasBook(string book) //metodo para verificar si existe un libro
+        {
+            return _repository.Exists(book);
         }
     }
 }

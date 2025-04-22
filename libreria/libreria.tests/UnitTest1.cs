@@ -1,35 +1,44 @@
 ﻿using NUnit.Framework;
+using Moq;
 using libreria;
 
 namespace libreria.tests
 {
     public class LibraryTests
-    {
-        [Test]
-        public void Should_AddBook_And_FindIt()
+    {        
+        [Test] // ✅ Marca este método como prueba
+        public void Should_AddBook_UsingRepository()
         {
-            var library = new Library();
-            library.AddBook("Clean Code");
+            var repoMock = new Mock<IBookRepository>();           // crear el mock de IBookRepository
+            var library = new Library(repoMock.Object);           // inyecta el mock en Library
 
-            Assert.IsTrue(library.HasBook("Clean Code"));
+            library.AddBook("Clean Code");                        // agregar libro
+
+            repoMock.Verify(r => r.Add("Clean Code"), Times.Once); // verificar que add fue llamado 1 vez
         }
 
-        [Test]
-        public void Should_ReturnFalse_IfBookNotExists()
+        [Test] // ✅ Marca este método como prueba
+        //  Simula que un libro sí existe, y verifica que HasBook lo reconozca
+        public void Should_ReturnTrue_WhenBookExists()
         {
-            var library = new Library();
+            var repoMock = new Mock<IBookRepository>();                         // Mock del repo
+            repoMock.Setup(r => r.Exists("Refactoring")).Returns(true);        // Simula que el libro existe
 
-            Assert.IsFalse(library.HasBook("The Pragmatic Programmer"));
+            var library = new Library(repoMock.Object);                         // Inyecta el mock
+
+            Assert.IsTrue(library.HasBook("Refactoring"));                     // Verifica que devuelve true
         }
 
-        [Test]
-        public void Should_Allow_DuplicatedBooks()
+        [Test] // ✅ Marca este método como prueba
+        // Simula que un libro no existe, y verifica que HasBook devuelva false
+        public void Should_ReturnFalse_WhenBookDoesNotExist()
         {
-            var library = new Library();
-            library.AddBook("Domain-Driven Design");
-            library.AddBook("Domain-Driven Design");
+            var repoMock = new Mock<IBookRepository>();                         // Mock del repo
+            repoMock.Setup(r => r.Exists("Unknown Book")).Returns(false);      // Simula que el libro no existe
 
-            Assert.IsTrue(library.HasBook("Domain-Driven Design"));
+            var library = new Library(repoMock.Object);                         // Inyecta el mock
+
+            Assert.IsFalse(library.HasBook("Unknown Book"));                   // Verifica que devuelve false
         }
     }
 }
